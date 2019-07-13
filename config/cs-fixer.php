@@ -25,4 +25,16 @@ return [
             "{$basePath}/routes",
         ],
     ],
+    'replace_path_helpers' => [
+        'config_path' => "{$basePath}/config",
+        'provider_path' => "{$basePath}/app/Providers",
+        'console_path' => "{$basePath}/app/Console",
+    ],
+
+    'normalize_php_doc' => [
+        'paths' => [
+            "{$basePath}/app",
+            "{$basePath}/database",
+        ],
+    ],
 ];

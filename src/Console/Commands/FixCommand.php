@@ -7,6 +7,8 @@ namespace McMatters\CsFixer\Console\Commands;
 use Illuminate\Console\Command;
 use McMatters\CsFixer\Steps\AddClassDocBlock;
 use McMatters\CsFixer\Steps\DeclareStrictTypes;
+use McMatters\CsFixer\Steps\NormalizePhpDoc;
+use McMatters\CsFixer\Steps\ReplacePathHelpers;
 
 /**
  * Class FixCommand
@@ -46,6 +48,8 @@ class FixCommand extends Command
         return [
             new DeclareStrictTypes(),
             new AddClassDocBlock(),
+            new ReplacePathHelpers(),
+            new NormalizePhpDoc(),
         ];
     }
 }
