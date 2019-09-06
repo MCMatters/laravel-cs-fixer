@@ -6,6 +6,7 @@ namespace McMatters\CsFixer;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use McMatters\CsFixer\Console\Commands\FixCommand;
+
 use function function_exists, method_exists;
 
 /**

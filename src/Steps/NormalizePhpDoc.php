@@ -7,8 +7,10 @@ namespace McMatters\CsFixer\Steps;
 use Illuminate\Support\Facades\Config;
 use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
-use const true;
+
 use function file_put_contents, preg_replace, preg_replace_callback;
+
+use const true;
 
 /**
  * Class NormalizePhpDoc
@@ -24,14 +26,14 @@ class NormalizePhpDoc implements Step
     {
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->getFiles() as $file) {
-            $content = preg_replace_callback('~/\*.*?\*/~s', function ($match) {
+            $content = preg_replace_callback('~/\*.*?\*/~s', static function ($match) {
                 $match = $match[0];
 
-                $match = preg_replace_callback('/\* @param\s*.*/', function ($match) {
+                $match = preg_replace_callback('/\* @param\s*.*/', static function ($match) {
                     return preg_replace('/\s{2,}/', ' ', $match[0]);
                 }, $match);
 
-                $match = preg_replace_callback('/(\*\n)?((\s*)\* @return)/', function ($match) {
+                $match = preg_replace_callback('/(\*\n)?((\s*)\* @return)/', static function ($match) {
                     if ($match[1] !== '') {
                         return $match[0];
                     }

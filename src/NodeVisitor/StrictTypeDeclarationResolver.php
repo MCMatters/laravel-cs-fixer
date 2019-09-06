@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Config;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\DeclareDeclare;
 use PhpParser\NodeTraverser;
-use const false, null, true;
+
 use function preg_replace;
+
+use const false, null, true;
 
 /**
  * Class StrictTypeDeclarationResolver

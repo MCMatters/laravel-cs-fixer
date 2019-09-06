@@ -7,8 +7,10 @@ namespace McMatters\CsFixer\NodeVisitor;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\NodeTraverser;
-use const null, true;
+
 use function array_splice, explode, implode, strlen, substr;
+
+use const null, true;
 
 /**
  * Class ClassDocBlockResolver

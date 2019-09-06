@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Config;
 use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
-use const false, true;
+
 use function count, file_put_contents, ltrim, preg_replace_callback, trim;
+
+use const false, true;
 
 /**
  * Class ReplacePathHelpers

@@ -11,8 +11,10 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use PhpParser\ParserFactory;
 use Symfony\Component\Finder\Finder;
-use const true;
+
 use function file_put_contents;
+
+use const true;
 
 /**
  * Class AddClassDocBlock

@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace McMatters\CsFixer\NodeVisitor;
 
 use PhpParser\NodeVisitorAbstract;
+
 use const false;
 
 /**

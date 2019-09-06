@@ -10,8 +10,10 @@ use McMatters\CsFixer\NodeVisitor\StrictTypeDeclarationResolver;
 use PhpParser\NodeTraverser;
 use PhpParser\ParserFactory;
 use Symfony\Component\Finder\Finder;
-use const true;
+
 use function file_put_contents;
+
+use const true;
 
 /**
  * Class DeclareStrictTypes
