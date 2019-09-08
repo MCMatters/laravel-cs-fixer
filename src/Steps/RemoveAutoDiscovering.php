@@ -12,7 +12,7 @@ use function array_merge_recursive, file_get_contents, file_put_contents,
     implode, json_encode, ksort, mb_strpos, mb_substr, preg_replace, sort,
     str_repeat, trim;
 
-use const JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES;
+use const false, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES;
 
 /**
  * Class RemoveAutoDiscovering
@@ -112,6 +112,31 @@ class RemoveAutoDiscovering implements Step
             return $content;
         }
 
+        $mark = mb_strpos($content, 'Package Service Providers...');
+
+        if (false === $mark) {
+            if (false === $mark = mb_strpos($content, "'providers'")) {
+                return $content;
+            }
+
+            if (false === $mark = mb_strpos($content, ']', $mark)) {
+                return $content;
+            }
+
+            $pattern = '/]/';
+            $replacePrefix = "\n";
+            $replaceSuffix = "\n    ]";
+        } else {
+            if (false === $mark = mb_strpos($content, '*/', $mark)) {
+                return $content;
+            }
+
+            $mark += 2; // add offset of "*/"
+            $pattern = "/\n/";
+            $replacePrefix = '';
+            $replaceSuffix = "\n";
+        }
+
         $rows = [];
 
         sort($providers);
@@ -122,17 +147,16 @@ class RemoveAutoDiscovering implements Step
 
         $rows = implode($glue, $rows);
 
-        $mark = mb_strpos($content, 'Package Service Providers...');
         $piece = mb_substr($content, 0, $mark);
 
         $injected = preg_replace(
-            '/ \*\//',
-            " */{$glue}{$rows}",
+            $pattern,
+            "{$replacePrefix}{$glue}{$rows}{$replaceSuffix}",
             mb_substr($content, $mark),
             1
         );
 
-        return "{$piece}{$injected}";
+        return trim($piece).$injected;
     }
 
     /**
@@ -151,6 +175,16 @@ class RemoveAutoDiscovering implements Step
             return $content;
         }
 
+        if (false === $mark = mb_strpos($content, "'aliases'")) {
+            return $content;
+        }
+
+        if (false === $mark = mb_strpos($content, ']', $mark)) {
+            return $content;
+        }
+
+        $piece = mb_substr($content, 0, $mark);
+
         $rows = [];
 
         ksort($aliases);
@@ -160,10 +194,6 @@ class RemoveAutoDiscovering implements Step
         }
 
         $rows = implode($glue, $rows);
-
-        $mark = mb_strpos($content, "'aliases'");
-        $mark = mb_strpos($content, ']', $mark);
-        $piece = mb_substr($content, 0, $mark);
 
         $injected = preg_replace(
             '/]/',

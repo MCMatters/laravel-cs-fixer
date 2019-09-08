@@ -5,11 +5,10 @@ declare(strict_types = 1);
 namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
-use McMatters\CsFixer\Steps\AddClassDocBlock;
-use McMatters\CsFixer\Steps\DeclareStrictTypes;
-use McMatters\CsFixer\Steps\NormalizePhpDoc;
-use McMatters\CsFixer\Steps\RemoveAutodiscovering;
-use McMatters\CsFixer\Steps\ReplacePathHelpers;
+use McMatters\CsFixer\Steps\{
+    AddClassDocBlock, DeclareStrictTypes,NormalizePhpDoc, RemoveAutodiscovering,
+    ReplacePathHelpers
+};
 
 /**
  * Class FixCommand
