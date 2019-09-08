@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 use McMatters\CsFixer\Steps\AddClassDocBlock;
 use McMatters\CsFixer\Steps\DeclareStrictTypes;
 use McMatters\CsFixer\Steps\NormalizePhpDoc;
+use McMatters\CsFixer\Steps\RemoveAutodiscovering;
 use McMatters\CsFixer\Steps\ReplacePathHelpers;
 
 /**
@@ -29,6 +30,8 @@ class FixCommand extends Command
 
     /**
      * @return void
+     *
+     * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
     public function handle(): void
     {
@@ -42,6 +45,8 @@ class FixCommand extends Command
 
     /**
      * @return array
+     *
+     * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
     protected function getSteps(): array
     {
@@ -50,6 +55,7 @@ class FixCommand extends Command
             new AddClassDocBlock(),
             new ReplacePathHelpers(),
             new NormalizePhpDoc(),
+            new RemoveAutoDiscovering($this->getLaravel())
         ];
     }
 }
