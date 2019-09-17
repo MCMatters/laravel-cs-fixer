@@ -8,9 +8,9 @@ use Illuminate\Contracts\Foundation\Application;
 use McMatters\ComposerHelper\ComposerHelper;
 use McMatters\CsFixer\Contracts\Step;
 
-use function array_merge_recursive, file_get_contents, file_put_contents,
-    implode, json_encode, ksort, mb_strpos, mb_substr, preg_replace, sort,
-    str_repeat, trim;
+use function array_merge_recursive, array_values, file_get_contents,
+    file_put_contents, implode, json_encode, ksort, mb_strpos, mb_substr,
+    preg_replace, sort, stripos, str_repeat, trim, unlink;
 
 use const false, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES;
 
@@ -59,6 +59,7 @@ class RemoveAutoDiscovering implements Step
         }
 
         $this->writeComposerConfig($config);
+        $this->removeCachedFiles();
         $this->writeExtraToAppConfig($this->getDiscoverPackages());
     }
 
@@ -71,10 +72,29 @@ class RemoveAutoDiscovering implements Step
     {
         $config['extra']['laravel']['dont-discover'] = ['*'];
 
+        foreach ($config['scripts'] ?? [] as $hook => $scripts) {
+            foreach ($scripts as $key => $script) {
+                if (stripos($script, 'php artisan package:discover') !== false) {
+                    unset($config['scripts'][$hook][$key]);
+                }
+            }
+
+            $config['scripts'][$hook] = array_values($config['scripts'][$hook]);
+        }
+
         file_put_contents(
             $this->composer->getComposerConfigPath(),
             json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
+    }
+
+    /**
+     * @return void
+     */
+    protected function removeCachedFiles(): void
+    {
+        @unlink($this->app->getCachedPackagesPath());
+        @unlink($this->app->getCachedServicesPath());
     }
 
     /**
