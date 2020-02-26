@@ -6,7 +6,7 @@ namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
 use McMatters\CsFixer\Steps\{
-    AddClassDocBlock, DeclareStrictTypes,NormalizePhpDoc, RemoveAutodiscovering,
+    AddClassDocBlock, DeclareStrictTypes,NormalizePhpDoc, RemoveAutoDiscovering,
     ReplacePathHelpers
 };
 
