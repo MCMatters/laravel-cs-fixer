@@ -1,13 +1,13 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
 use McMatters\CsFixer\Steps\{
-    AddClassDocBlock, DeclareStrictTypes,NormalizePhpDoc, RemoveAutodiscovering,
-    ReplacePathHelpers
+    AddClassDocBlock, DeclareStrictTypes, NormalizePhpDoc,
+    RemoveAutodiscovering, ReplacePathHelpers
 };
 
 /**
