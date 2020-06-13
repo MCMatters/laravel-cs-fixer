@@ -49,6 +49,7 @@ class RemoveAutoDiscovering implements Step
      *
      * @throws \McMatters\ComposerHelper\Exceptions\EmptyFileException
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     public function handle(): void
     {
@@ -60,7 +61,10 @@ class RemoveAutoDiscovering implements Step
 
         $this->writeComposerConfig($config);
         $this->removeCachedFiles();
-        $this->writeExtraToAppConfig($this->getDiscoverPackages());
+
+        $packages = $this->filterIncludedPackages($this->getDiscoverPackages());
+
+        $this->writeExtraToAppConfig($packages);
     }
 
     /**
@@ -245,5 +249,31 @@ class RemoveAutoDiscovering implements Step
         }
 
         return array_merge_recursive($discoverPackages, ...$packages);
+    }
+
+    /**
+     * @param array $packages
+     *
+     * @return array
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function filterIncludedPackages(array $packages): array
+    {
+        /** @var \Illuminate\Contracts\Config\Repository $config */
+        $config = $this->app->make('config');
+
+        $providers = $config->get('app.providers', []);
+        $aliases = $config->get('app.aliases', []);
+
+        foreach (['providers', 'aliases'] as $type) {
+            foreach ($packages[$type] ?? [] as $key => $item) {
+                if (in_array($item, $$type, true)) {
+                    unset($packages[$type][$key]);
+                }
+            }
+        }
+
+        return $packages;
     }
 }

@@ -12,7 +12,7 @@ return [
         ],
         'replacing' => [
             'pattern' => '/<\?php\n*/',
-            'replacement' => "<?php\n\ndeclare(strict_types = 1);\n\n",
+            'replacement' => "<?php\n\ndeclare(strict_types=1);\n\n",
         ],
     ],
     'declare_strict_types' => [
