@@ -10,9 +10,14 @@ use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
-use function count, file_put_contents, ltrim, preg_replace_callback, trim;
+use function count;
+use function file_put_contents;
+use function ltrim;
+use function preg_replace_callback;
+use function trim;
 
-use const false, true;
+use const false;
+use const true;
 
 /**
  * Class ReplacePathHelpers
@@ -125,15 +130,15 @@ class ReplacePathHelpers implements Step
                             return "{$prefix}->{$data['replace']}(".ltrim($match[1], '/').')';
                         }
 
-                        return "{$prefix}->{$data['replace']}().'/".trim(ltrim($match[1], '/'), "'")."'";
+                        return "\"{{$prefix}->{$data['replace']}()}/".trim(ltrim($match[1], '/'), "'").'"';
                     }
 
                     if ($matchesCount === 5) {
                         if ($data['args']) {
-                            return "{$prefix}->{$data['replace']}('".ltrim($match[4], '/').'\')';
+                            return "{$prefix}->{$data['replace']}('".ltrim($match[4], '/')."')";
                         }
 
-                        return "{$prefix}->{$data['replace']}().'/".ltrim($match[4], '/')."'";
+                        return "\"{{$prefix}->{$data['replace']}()}/".ltrim($match[4], '/').'"';
                     }
 
                     return $match[0];

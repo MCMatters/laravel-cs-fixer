@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
-use McMatters\CsFixer\Steps\{
-    AddClassDocBlock, DeclareStrictTypes, NormalizePhpDoc,
-    RemoveAutoDiscovering, ReplacePathHelpers
-};
+use McMatters\CsFixer\Steps\AddClassDocBlock;
+use McMatters\CsFixer\Steps\DeclareStrictTypes;
+use McMatters\CsFixer\Steps\NormalizePhpDoc;
+use McMatters\CsFixer\Steps\RemoveAutoDiscovering;
+use McMatters\CsFixer\Steps\ReplacePathHelpers;
 
 /**
  * Class FixCommand
@@ -28,11 +29,11 @@ class FixCommand extends Command
     protected $description = 'Fix code styling';
 
     /**
-     * @return void
+     * @return int
      *
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
-    public function handle(): void
+    public function handle(): int
     {
         /** @var \McMatters\CsFixer\Contracts\Step $step */
         foreach ($this->getSteps() as $step) {
@@ -40,6 +41,8 @@ class FixCommand extends Command
         }
 
         $this->info('Operation completed successfully');
+
+        return self::SUCCESS;
     }
 
     /**

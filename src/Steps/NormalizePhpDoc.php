@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Config;
 use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
 
-use function file_put_contents, preg_replace, preg_replace_callback;
+use function file_put_contents;
+use function preg_replace;
+use function preg_replace_callback;
 
 use const true;
 
@@ -33,15 +35,13 @@ class NormalizePhpDoc implements Step
                     return preg_replace('/\s{2,}/', ' ', $match[0]);
                 }, $match);
 
-                $match = preg_replace_callback('/(\*\n)?((\s*)\* @return)/', static function ($match) {
+                return preg_replace_callback('/(\*\n)?((\s*)\* @return)/', static function ($match) {
                     if ($match[1] !== '') {
                         return $match[0];
                     }
 
                     return "{$match[3]}*{$match[0]}";
                 }, $match);
-
-                return $match;
             }, $file->getContents());
 
             file_put_contents($file->getPathname(), $content);

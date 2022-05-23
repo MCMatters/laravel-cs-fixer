@@ -8,9 +8,14 @@ use PhpParser\Node;
 use PhpParser\Node\Stmt\Class_;
 use PhpParser\NodeTraverser;
 
-use function array_splice, explode, implode, strlen, substr;
+use function array_splice;
+use function explode;
+use function implode;
+use function strlen;
+use function substr;
 
-use const null, true;
+use const null;
+use const true;
 
 /**
  * Class ClassDocBlockResolver

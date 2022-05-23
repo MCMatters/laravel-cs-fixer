@@ -28,7 +28,7 @@ class AddClassDocBlock implements Step
      */
     public function handle(): void
     {
-        $parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->getFiles() as $file) {

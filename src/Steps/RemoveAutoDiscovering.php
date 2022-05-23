@@ -8,11 +8,25 @@ use Illuminate\Contracts\Foundation\Application;
 use McMatters\ComposerHelper\ComposerHelper;
 use McMatters\CsFixer\Contracts\Step;
 
-use function array_merge_recursive, array_values, file_get_contents,
-    file_put_contents, implode, json_encode, ksort, mb_strpos, mb_substr,
-    preg_replace, sort, stripos, str_repeat, trim, unlink;
+use function array_merge_recursive;
+use function array_values;
+use function file_get_contents;
+use function file_put_contents;
+use function implode;
+use function json_encode;
+use function ksort;
+use function mb_strpos;
+use function mb_substr;
+use function preg_replace;
+use function sort;
+use function stripos;
+use function str_repeat;
+use function trim;
+use function unlink;
 
-use const false, JSON_PRETTY_PRINT, JSON_UNESCAPED_SLASHES;
+use const false;
+use const JSON_PRETTY_PRINT;
+use const JSON_UNESCAPED_SLASHES;
 
 /**
  * Class RemoveAutoDiscovering
@@ -240,7 +254,7 @@ class RemoveAutoDiscovering implements Step
         $discoverPackages = ['providers' => [], 'aliases' => []];
         $packages = [];
 
-        foreach ($this->composer->getAllExtra() as $package => $extra) {
+        foreach ($this->composer->getAllExtra() as $extra) {
             if (empty($extra['laravel'])) {
                 continue;
             }

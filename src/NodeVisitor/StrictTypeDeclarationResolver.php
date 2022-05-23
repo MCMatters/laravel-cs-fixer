@@ -11,7 +11,9 @@ use PhpParser\NodeTraverser;
 
 use function preg_replace;
 
-use const false, null, true;
+use const false;
+use const null;
+use const true;
 
 /**
  * Class StrictTypeDeclarationResolver
@@ -32,7 +34,8 @@ class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
      */
     public function enterNode(Node $node)
     {
-        if (!$this->isDeclared &&
+        if (
+            !$this->isDeclared &&
             $node instanceof DeclareDeclare &&
             (string) $node->key === 'strict_types'
         ) {
