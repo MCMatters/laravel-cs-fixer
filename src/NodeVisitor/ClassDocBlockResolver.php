@@ -36,6 +36,10 @@ class ClassDocBlockResolver extends ChangeableContentNodeVisitor
                 return NodeTraverser::STOP_TRAVERSAL;
             }
 
+            if ($node->isAnonymous()) {
+                return NodeTraverser::STOP_TRAVERSAL;
+            }
+
             $class = (string) $node->name;
             $replacement = "/**\n * Class {$class}\n";
 
