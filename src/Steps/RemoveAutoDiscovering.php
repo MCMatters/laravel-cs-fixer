@@ -62,9 +62,9 @@ class RemoveAutoDiscovering implements Step
         $this->updateComposerJsonContent($content);
         $this->removeCachedFiles();
 
-        $packages = $this->filterIncludedPackages($this->getDiscoverPackages());
+        $packages = $this->filterPackages($this->getDiscoverPackages());
 
-        $this->writeExtraToAppConfig($packages);
+        $this->updateAppConfig($packages);
     }
 
     protected function updateComposerJsonContent(array $content): void
@@ -101,7 +101,7 @@ class RemoveAutoDiscovering implements Step
         }
     }
 
-    protected function writeExtraToAppConfig(array $packages): void
+    protected function updateAppConfig(array $packages): void
     {
         $indent = 8;
         $glue = "\n".str_repeat(' ', $indent);
@@ -231,16 +231,17 @@ class RemoveAutoDiscovering implements Step
         return array_merge_recursive($discoverPackages, ...$packages);
     }
 
-    protected function filterIncludedPackages(array $packages): array
+    protected function filterPackages(array $packages): array
     {
-        $config = [
-            'providers' => Config::get('app.providers', []),
-            'aliases' => Config::get('app.aliases', []),
-        ];
-
         foreach (['providers', 'aliases'] as $type) {
+            $existing = Config::get("app.{$type}", []);
+            $exclude = Config::get("cs-fixer.remove_auto_discovering.exclude.{$type}", []);
+
             foreach ($packages[$type] ?? [] as $key => $item) {
-                if (in_array($item, $config[$type], true)) {
+                if (
+                    in_array($item, $existing[$type], true) ||
+                    in_array($item, $exclude[$type], true)
+                ) {
                     unset($packages[$type][$key]);
                 }
             }
