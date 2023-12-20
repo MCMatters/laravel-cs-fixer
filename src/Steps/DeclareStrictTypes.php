@@ -15,16 +15,8 @@ use function file_put_contents;
 
 use const true;
 
-/**
- * Class DeclareStrictTypes
- *
- * @package McMatters\CsFixer\Steps
- */
 class DeclareStrictTypes implements Step
 {
-    /**
-     * @return void
-     */
     public function handle(): void
     {
         $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
@@ -45,9 +37,6 @@ class DeclareStrictTypes implements Step
         }
     }
 
-    /**
-     * @return \Symfony\Component\Finder\Finder
-     */
     protected function getFiles(): Finder
     {
         return Finder::create()

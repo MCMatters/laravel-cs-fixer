@@ -15,21 +15,11 @@ use const false;
 use const null;
 use const true;
 
-/**
- * Class StrictTypeDeclarationResolver
- *
- * @package McMatters\CsFixer\NodeVisitor
- */
 class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
 {
-    /**
-     * @var bool
-     */
-    protected $isDeclared = false;
+    protected bool $isDeclared = false;
 
     /**
-     * @param \PhpParser\Node $node
-     *
      * @return int|void
      */
     public function enterNode(Node $node)
@@ -45,11 +35,6 @@ class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
         }
     }
 
-    /**
-     * @param array $nodes
-     *
-     * @return void
-     */
     public function afterTraverse(array $nodes): void
     {
         if (!$this->isDeclared) {
@@ -57,22 +42,19 @@ class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
         }
     }
 
-    /**
-     * @return void
-     */
     protected function replaceContent(): void
     {
         static $config;
 
         if (null === $config) {
-            $config = Config::get('cs-fixer.class_php_docs.replacing');
+            $config = Config::get('cs-fixer.declare_strict_types.replacing');
         }
 
         $this->content = preg_replace(
             $config['pattern'] ?? '',
             $config['replacement'] ?? '',
             $this->content,
-            1
+            1,
         );
 
         $this->wasContentChanged = true;

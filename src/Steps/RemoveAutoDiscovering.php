@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace McMatters\CsFixer\Steps;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\Config;
 use McMatters\ComposerHelper\ComposerHelper;
 use McMatters\CsFixer\Contracts\Step;
 
@@ -17,6 +18,7 @@ use function json_encode;
 use function ksort;
 use function mb_strpos;
 use function mb_substr;
+use function method_exists;
 use function preg_replace;
 use function sort;
 use function stripos;
@@ -26,30 +28,16 @@ use function unlink;
 
 use const false;
 use const JSON_PRETTY_PRINT;
+use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 
-/**
- * Class RemoveAutoDiscovering
- *
- * @package McMatters\CsFixer\Steps
- */
 class RemoveAutoDiscovering implements Step
 {
-    /**
-     * @var \Illuminate\Contracts\Foundation\Application
-     */
-    protected $app;
+    protected Application $app;
+
+    protected ComposerHelper $composer;
 
     /**
-     * @var \McMatters\ComposerHelper\ComposerHelper
-     */
-    protected $composer;
-
-    /**
-     * RemoveAutoDiscovering constructor.
-     *
-     * @param \Illuminate\Contracts\Foundation\Application $app
-     *
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
     public function __construct(Application $app)
@@ -59,21 +47,19 @@ class RemoveAutoDiscovering implements Step
     }
 
     /**
-     * @return void
-     *
      * @throws \McMatters\ComposerHelper\Exceptions\EmptyFileException
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @throws \JsonException
      */
     public function handle(): void
     {
-        $config = $this->composer->getComposerConfig();
+        $content = $this->composer->getComposerJsonContent();
 
-        if ($config['extra']['laravel']['dont-discover'] ?? '' === '*') {
+        if ($content['extra']['laravel']['dont-discover'] ?? '' === '*') {
             return;
         }
 
-        $this->writeComposerConfig($config);
+        $this->updateComposerJsonContent($content);
         $this->removeCachedFiles();
 
         $packages = $this->filterIncludedPackages($this->getDiscoverPackages());
@@ -81,45 +67,40 @@ class RemoveAutoDiscovering implements Step
         $this->writeExtraToAppConfig($packages);
     }
 
-    /**
-     * @param array $config
-     *
-     * @return void
-     */
-    protected function writeComposerConfig(array $config): void
+    protected function updateComposerJsonContent(array $content): void
     {
-        $config['extra']['laravel']['dont-discover'] = ['*'];
+        $content['extra']['laravel']['dont-discover'] = ['*'];
 
-        foreach ($config['scripts'] ?? [] as $hook => $scripts) {
+        foreach ($content['scripts'] ?? [] as $hook => $scripts) {
             foreach ($scripts as $key => $script) {
                 if (stripos($script, 'php artisan package:discover') !== false) {
-                    unset($config['scripts'][$hook][$key]);
+                    unset($content['scripts'][$hook][$key]);
                 }
             }
 
-            $config['scripts'][$hook] = array_values($config['scripts'][$hook]);
+            $content['scripts'][$hook] = array_values($content['scripts'][$hook]);
         }
 
         file_put_contents(
-            $this->composer->getComposerConfigPath(),
-            json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            $this->composer->getComposerJsonPath(),
+            json_encode(
+                $content,
+                JSON_THROW_ON_ERROR | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
+            )
         );
     }
 
-    /**
-     * @return void
-     */
     protected function removeCachedFiles(): void
     {
-        @unlink($this->app->getCachedPackagesPath());
-        @unlink($this->app->getCachedServicesPath());
+        if (method_exists($this->app, 'getCachedPackagesPath')) {
+            @unlink($this->app->getCachedPackagesPath());
+        }
+
+        if (method_exists($this->app, 'getCachedServicesPath')) {
+            @unlink($this->app->getCachedServicesPath());
+        }
     }
 
-    /**
-     * @param array $packages
-     *
-     * @return void
-     */
     protected function writeExtraToAppConfig(array $packages): void
     {
         $indent = 8;
@@ -134,17 +115,10 @@ class RemoveAutoDiscovering implements Step
         file_put_contents($configAppPath, $content);
     }
 
-    /**
-     * @param array $providers
-     * @param string $content
-     * @param string $glue
-     *
-     * @return string
-     */
     protected function appendProviders(
         array $providers,
         string $content,
-        string $glue
+        string $glue,
     ): string {
         if (!$providers) {
             return $content;
@@ -197,17 +171,10 @@ class RemoveAutoDiscovering implements Step
         return trim($piece).$injected;
     }
 
-    /**
-     * @param array $aliases
-     * @param string $content
-     * @param string $glue
-     *
-     * @return string
-     */
     protected function appendAliases(
         array $aliases,
         string $content,
-        string $glue
+        string $glue,
     ): string {
         if (!$aliases) {
             return $content;
@@ -244,17 +211,16 @@ class RemoveAutoDiscovering implements Step
     }
 
     /**
-     * @return array
-     *
      * @throws \McMatters\ComposerHelper\Exceptions\EmptyFileException
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
+     * @throws \JsonException
      */
     protected function getDiscoverPackages(): array
     {
         $discoverPackages = ['providers' => [], 'aliases' => []];
         $packages = [];
 
-        foreach ($this->composer->getAllExtra() as $extra) {
+        foreach ($this->composer->getExtras() as $extra) {
             if (empty($extra['laravel'])) {
                 continue;
             }
@@ -265,24 +231,16 @@ class RemoveAutoDiscovering implements Step
         return array_merge_recursive($discoverPackages, ...$packages);
     }
 
-    /**
-     * @param array $packages
-     *
-     * @return array
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
     protected function filterIncludedPackages(array $packages): array
     {
-        /** @var \Illuminate\Contracts\Config\Repository $config */
-        $config = $this->app->make('config');
-
-        $providers = $config->get('app.providers', []);
-        $aliases = $config->get('app.aliases', []);
+        $config = [
+            'providers' => Config::get('app.providers', []),
+            'aliases' => Config::get('app.aliases', []),
+        ];
 
         foreach (['providers', 'aliases'] as $type) {
             foreach ($packages[$type] ?? [] as $key => $item) {
-                if (in_array($item, $$type, true)) {
+                if (in_array($item, $config[$type], true)) {
                     unset($packages[$type][$key]);
                 }
             }

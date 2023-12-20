@@ -5,32 +5,18 @@ declare(strict_types=1);
 namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
-use McMatters\CsFixer\Steps\AddClassDocBlock;
 use McMatters\CsFixer\Steps\DeclareStrictTypes;
 use McMatters\CsFixer\Steps\NormalizePhpDoc;
 use McMatters\CsFixer\Steps\RemoveAutoDiscovering;
 use McMatters\CsFixer\Steps\ReplacePathHelpers;
 
-/**
- * Class FixCommand
- *
- * @package McMatters\CsFixer\Console\Commands
- */
 class FixCommand extends Command
 {
-    /**
-     * @var string
-     */
     protected $name = 'cs-fixer:fix';
 
-    /**
-     * @var string
-     */
     protected $description = 'Fix code styling';
 
     /**
-     * @return int
-     *
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
     public function handle(): int
@@ -46,18 +32,15 @@ class FixCommand extends Command
     }
 
     /**
-     * @return array
-     *
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
     protected function getSteps(): array
     {
         return [
             new DeclareStrictTypes(),
-            new AddClassDocBlock(),
             new ReplacePathHelpers(),
             new NormalizePhpDoc(),
-            new RemoveAutoDiscovering($this->getLaravel())
+            new RemoveAutoDiscovering($this->getLaravel()),
         ];
     }
 }

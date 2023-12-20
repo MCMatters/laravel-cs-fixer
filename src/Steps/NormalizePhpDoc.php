@@ -14,16 +14,8 @@ use function preg_replace_callback;
 
 use const true;
 
-/**
- * Class NormalizePhpDoc
- *
- * @package McMatters\CsFixer\Steps
- */
 class NormalizePhpDoc implements Step
 {
-    /**
-     * @return void
-     */
     public function handle(): void
     {
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
@@ -48,9 +40,6 @@ class NormalizePhpDoc implements Step
         }
     }
 
-    /**
-     * @return \Symfony\Component\Finder\Finder
-     */
     protected function getFiles(): Finder
     {
         return Finder::create()

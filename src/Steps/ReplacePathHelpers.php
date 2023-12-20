@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\CsFixer\Steps;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Config;
 use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
@@ -19,29 +18,15 @@ use function trim;
 use const false;
 use const true;
 
-/**
- * Class ReplacePathHelpers
- *
- * @package McMatters\CsFixer\Steps
- */
 class ReplacePathHelpers implements Step
 {
-    /**
-     * @var array
-     */
-    protected $config;
+    protected array $config;
 
-    /**
-     * ReplaceHelpers constructor.
-     */
     public function __construct()
     {
         $this->config = Config::get('cs-fixer.replace_path_helpers');
     }
 
-    /**
-     * @return void
-     */
     public function handle(): void
     {
         $this->replacePathHelpersInConfig();
@@ -49,35 +34,26 @@ class ReplacePathHelpers implements Step
         $this->replacePathHelpersInConsole();
     }
 
-    /**
-     * @return void
-     */
     protected function replacePathHelpersInConfig(): void
     {
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->getFiles(Arr::get($this->config, 'config_path')) as $file) {
+        foreach ($this->getFiles($this->config['config_path']) as $file) {
             $this->replacePathHelpers($file, '$app');
         }
     }
 
-    /**
-     * @return void
-     */
     protected function replacePathHelpersInProviders(): void
     {
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->getFiles(Arr::get($this->config, 'provider_path')) as $file) {
+        foreach ($this->getFiles($this->config['provider_path']) as $file) {
             $this->replacePathHelpers($file, '$this->app');
         }
     }
 
-    /**
-     * @return void
-     */
     protected function replacePathHelpersInConsole(): void
     {
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
-        foreach ($this->getFiles(Arr::get($this->config, 'console_path')) as $file) {
+        foreach ($this->getFiles($this->config['console_path']) as $file) {
             if ($file->getFilename() === 'Kernel.php') {
                 $this->replacePathHelpers($file, '$this->app');
             } else {
@@ -86,11 +62,6 @@ class ReplacePathHelpers implements Step
         }
     }
 
-    /**
-     * @param string $in
-     *
-     * @return \Symfony\Component\Finder\Finder
-     */
     protected function getFiles(string $in): Finder
     {
         return Finder::create()
@@ -102,12 +73,6 @@ class ReplacePathHelpers implements Step
             ->in($in);
     }
 
-    /**
-     * @param \Symfony\Component\Finder\SplFileInfo $file
-     * @param string $prefix
-     *
-     * @return void
-     */
     protected function replacePathHelpers(SplFileInfo $file, string $prefix): void
     {
         $paths = [
