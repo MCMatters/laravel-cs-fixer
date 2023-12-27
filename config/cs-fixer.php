@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-$basePath = isset($app) ? $app->basePath() : base_path();
+$basePath = isset($app) && is_object($app) && method_exists($app, 'basePath')
+    ? $app->basePath()
+    : base_path();
 
 return [
     'declare_strict_types' => [
