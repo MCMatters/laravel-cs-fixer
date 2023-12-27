@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace McMatters\CsFixer\Console\Commands;
 
 use Illuminate\Console\Command;
-use McMatters\CsFixer\Steps\DeclareStrictTypes;
-use McMatters\CsFixer\Steps\NormalizePhpDoc;
-use McMatters\CsFixer\Steps\RemoveAutoDiscovering;
-use McMatters\CsFixer\Steps\ReplacePathHelpers;
+use McMatters\CsFixer\Managers\StepManager;
 
 class FixCommand extends Command
 {
@@ -16,31 +13,12 @@ class FixCommand extends Command
 
     protected $description = 'Fix code styling';
 
-    /**
-     * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
-     */
-    public function handle(): int
+    public function handle(StepManager $stepManager): int
     {
-        /** @var \McMatters\CsFixer\Contracts\Step $step */
-        foreach ($this->getSteps() as $step) {
-            $step->handle();
-        }
+        $stepManager->runSteps();
 
         $this->info('Operation completed successfully');
 
         return self::SUCCESS;
-    }
-
-    /**
-     * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
-     */
-    protected function getSteps(): array
-    {
-        return [
-            new DeclareStrictTypes(),
-            new ReplacePathHelpers(),
-            new NormalizePhpDoc(),
-            new RemoveAutoDiscovering($this->getLaravel()),
-        ];
     }
 }

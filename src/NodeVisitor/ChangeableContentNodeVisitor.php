@@ -12,8 +12,10 @@ abstract class ChangeableContentNodeVisitor extends NodeVisitorAbstract
 {
     protected bool $wasContentChanged = false;
 
-    public function __construct(protected string $content)
-    {
+    public function __construct(
+        protected string $content,
+        protected array $config = [],
+    ) {
     }
 
     public function getContent(): string

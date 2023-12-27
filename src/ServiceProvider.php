@@ -6,6 +6,7 @@ namespace McMatters\CsFixer;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use McMatters\CsFixer\Console\Commands\FixCommand;
+use McMatters\CsFixer\Managers\StepManager;
 
 class ServiceProvider extends BaseServiceProvider
 {
@@ -24,6 +25,7 @@ class ServiceProvider extends BaseServiceProvider
 
     public function register(): void
     {
+        $this->app->singleton(StepManager::class, static fn () => new StepManager());
         $this->app->singleton('command.cs-fixer.fix', static fn () => new FixCommand());
 
         $this->commands(['command.cs-fixer.fix']);

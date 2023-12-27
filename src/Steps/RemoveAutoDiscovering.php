@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace McMatters\CsFixer\Steps;
 
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Config;
 use McMatters\ComposerHelper\ComposerHelper;
-use McMatters\CsFixer\Contracts\Step;
 
 use function array_merge_recursive;
 use function array_values;
@@ -31,7 +31,7 @@ use const JSON_PRETTY_PRINT;
 use const JSON_THROW_ON_ERROR;
 use const JSON_UNESCAPED_SLASHES;
 
-class RemoveAutoDiscovering implements Step
+class RemoveAutoDiscovering extends AbstractStep
 {
     protected Application $app;
 
@@ -40,10 +40,12 @@ class RemoveAutoDiscovering implements Step
     /**
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      */
-    public function __construct(Application $app)
+    public function __construct(array $config = [])
     {
-        $this->app = $app;
-        $this->composer = new ComposerHelper($app->basePath());
+        parent::__construct($config);
+
+        $this->app = App::getInstance();
+        $this->composer = new ComposerHelper($this->app->basePath());
     }
 
     /**
@@ -51,8 +53,10 @@ class RemoveAutoDiscovering implements Step
      * @throws \McMatters\ComposerHelper\Exceptions\FileNotFoundException
      * @throws \JsonException
      */
-    public function handle(): void
+    public function handle(array $config = []): void
     {
+        parent::handle($config);
+
         $content = $this->composer->getComposerJsonContent();
 
         if ($content['extra']['laravel']['dont-discover'] ?? '' === '*') {
@@ -235,7 +239,7 @@ class RemoveAutoDiscovering implements Step
     {
         foreach (['providers', 'aliases'] as $type) {
             $existing = Config::get("app.{$type}", []);
-            $exclude = Config::get("cs-fixer.remove_auto_discovering.exclude.{$type}", []);
+            $exclude = $this->config['exclude'][$type] ?? [];
 
             foreach ($packages[$type] ?? [] as $key => $item) {
                 if (

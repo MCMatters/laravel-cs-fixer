@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\CsFixer\Steps;
 
-use Illuminate\Support\Facades\Config;
-use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
 
 use function file_put_contents;
@@ -14,10 +12,12 @@ use function preg_replace_callback;
 
 use const true;
 
-class NormalizePhpDoc implements Step
+class NormalizePhpDoc extends AbstractStep
 {
-    public function handle(): void
+    public function handle(array $config = []): void
     {
+        parent::handle($config);
+
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->getFiles() as $file) {
             $content = preg_replace_callback('~/\*.*?\*/~s', static function ($match) {
@@ -48,6 +48,6 @@ class NormalizePhpDoc implements Step
             ->ignoreVCS(true)
             ->name('*.php')
             ->files()
-            ->in(Config::get('cs-fixer.normalize_php_doc.paths'));
+            ->in($this->config['paths']);
     }
 }

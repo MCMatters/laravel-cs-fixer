@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\CsFixer\Steps;
 
-use Illuminate\Support\Facades\Config;
-use McMatters\CsFixer\Contracts\Step;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -18,17 +16,12 @@ use function trim;
 use const false;
 use const true;
 
-class ReplacePathHelpers implements Step
+class ReplacePathHelpers extends AbstractStep
 {
-    protected array $config;
-
-    public function __construct()
+    public function handle(array $config = []): void
     {
-        $this->config = Config::get('cs-fixer.replace_path_helpers');
-    }
+        parent::handle($config);
 
-    public function handle(): void
-    {
         $this->replacePathHelpersInConfig();
         $this->replacePathHelpersInProviders();
         $this->replacePathHelpersInConsole();

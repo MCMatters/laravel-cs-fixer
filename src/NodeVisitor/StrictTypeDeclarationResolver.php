@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace McMatters\CsFixer\NodeVisitor;
 
-use Illuminate\Support\Facades\Config;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\DeclareDeclare;
 use PhpParser\NodeTraverser;
@@ -12,7 +11,6 @@ use PhpParser\NodeTraverser;
 use function preg_replace;
 
 use const false;
-use const null;
 use const true;
 
 class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
@@ -44,15 +42,9 @@ class StrictTypeDeclarationResolver extends ChangeableContentNodeVisitor
 
     protected function replaceContent(): void
     {
-        static $config;
-
-        if (null === $config) {
-            $config = Config::get('cs-fixer.declare_strict_types.replacing');
-        }
-
         $this->content = preg_replace(
-            $config['pattern'] ?? '',
-            $config['replacement'] ?? '',
+            $this->config['replacing']['pattern'] ?? '',
+            $this->config['replacing']['replacement'] ?? '',
             $this->content,
             1,
         );

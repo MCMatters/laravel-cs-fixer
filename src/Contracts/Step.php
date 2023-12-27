@@ -6,5 +6,5 @@ namespace McMatters\CsFixer\Contracts;
 
 interface Step
 {
-    public function handle(): void;
+    public function handle(array $config = []): void;
 }
