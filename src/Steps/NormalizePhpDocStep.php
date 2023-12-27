@@ -12,7 +12,7 @@ use function preg_replace_callback;
 
 use const true;
 
-class NormalizePhpDoc extends AbstractStep
+class NormalizePhpDocStep extends AbstractStep
 {
     public function handle(array $config = []): void
     {

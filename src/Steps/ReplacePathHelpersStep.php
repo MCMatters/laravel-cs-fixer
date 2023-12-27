@@ -16,7 +16,7 @@ use function trim;
 use const false;
 use const true;
 
-class ReplacePathHelpers extends AbstractStep
+class ReplacePathHelpersStep extends AbstractStep
 {
     public function handle(array $config = []): void
     {

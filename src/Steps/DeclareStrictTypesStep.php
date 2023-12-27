@@ -13,7 +13,7 @@ use function file_put_contents;
 
 use const true;
 
-class DeclareStrictTypes extends AbstractStep
+class DeclareStrictTypesStep extends AbstractStep
 {
     public function handle(array $config = []): void
     {

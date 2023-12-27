@@ -7,10 +7,10 @@ namespace McMatters\CsFixer\Managers;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use McMatters\CsFixer\Steps\DeclareStrictTypes;
-use McMatters\CsFixer\Steps\NormalizePhpDoc;
-use McMatters\CsFixer\Steps\RemoveAutoDiscovering;
-use McMatters\CsFixer\Steps\ReplacePathHelpers;
+use McMatters\CsFixer\Steps\DeclareStrictTypesStep;
+use McMatters\CsFixer\Steps\NormalizePhpDocStep;
+use McMatters\CsFixer\Steps\RemoveAutoDiscoveringStep;
+use McMatters\CsFixer\Steps\ReplacePathHelpersStep;
 
 use function array_keys;
 use function class_basename;
@@ -56,10 +56,10 @@ class StepManager
     protected function setSteps(): void
     {
         $steps = [
-            DeclareStrictTypes::class,
-            ReplacePathHelpers::class,
-            NormalizePhpDoc::class,
-            RemoveAutoDiscovering::class,
+            DeclareStrictTypesStep::class,
+            ReplacePathHelpersStep::class,
+            NormalizePhpDocStep::class,
+            RemoveAutoDiscoveringStep::class,
         ];
 
         foreach ($steps as $step) {
