@@ -14,6 +14,7 @@ use McMatters\CsFixer\Steps\ReplacePathHelpersStep;
 
 use function array_keys;
 use function class_basename;
+use function substr;
 
 class StepManager
 {
@@ -63,7 +64,7 @@ class StepManager
         ];
 
         foreach ($steps as $step) {
-            $snakeCaseStep = Str::snake(class_basename($step));
+            $snakeCaseStep = Str::snake(substr(class_basename($step), 0, -4));
 
             $this->steps[$step] = new $step(Config::get("cs-fixer.{$snakeCaseStep}", []));
         }
