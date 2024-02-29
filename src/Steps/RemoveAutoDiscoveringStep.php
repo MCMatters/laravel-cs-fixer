@@ -243,8 +243,8 @@ class RemoveAutoDiscoveringStep extends AbstractStep
 
             foreach ($packages[$type] ?? [] as $key => $item) {
                 if (
-                    in_array($item, $existing[$type], true) ||
-                    in_array($item, $exclude[$type], true)
+                    in_array($item, $existing, true) ||
+                    in_array($item, $exclude, true)
                 ) {
                     unset($packages[$type][$key]);
                 }
