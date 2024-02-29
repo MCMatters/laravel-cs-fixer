@@ -19,7 +19,7 @@ class DeclareStrictTypesStep extends AbstractStep
     {
         parent::handle($config);
 
-        $parser = (new ParserFactory())->create(ParserFactory::PREFER_PHP7);
+        $parser = (new ParserFactory())->createForHostVersion();
 
         /** @var \Symfony\Component\Finder\SplFileInfo $file */
         foreach ($this->getFiles() as $file) {
